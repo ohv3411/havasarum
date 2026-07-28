@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Հավասարումների Տրենաժոր | 6-րդ դասարան</title>
+    
+    <!-- KaTeX գրադարան բանաձևերի համար -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary: #64748b;
+            --secondary-hover: #475569;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --hint-bg: #fffbeb;
+            --hint-border: #fcd34d;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .xp-score { font-size: 1.1rem; background: #e0e7ff; padding: 5px 12px; border-radius: 20px;}
+        .mastery-badge { display: none; color: var(--warning); font-size: 1.1rem; }
+
+        h1 { font-size: 2rem; margin-top: 0; margin-bottom: 25px; color: #0f172a; }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .level-btn:hover { background: #e2e8f0; }
+        .level-btn.active {
+            background: #dbeafe;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .level-stats {
+            background: #f8fafc;
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .equation-box {
+            background: #ffffff;
+            border: 3px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 40px 20px;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            transition: 0.3s;
+        }
+
+        /* Հուշման Բլոկ */
+        .hint-box {
+            background-color: var(--hint-bg);
+            border-left: 5px solid var(--hint-border);
+            padding: 18px 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 1.05rem;
+            color: #92400e;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            line-height: 1.5;
+        }
+
+        .interactive-area {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 150px;
+            padding: 12px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            outline: none;
+            transition: 0.3s;
+            color: var(--primary);
+        }
+        .input-group input:focus { border-color: var(--primary); }
+
+        .feedback-msg { font-weight: bold; font-size: 1.1rem; min-height: 25px; }
+        .msg-correct { color: var(--success); }
+        .msg-error { color: var(--danger); }
+
+        .action-btns {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        button.action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+            flex: 1;
+            min-width: 180px;
+            max-width: 220px;
+        }
+
+        .btn-check { background-color: var(--success); }
+        .btn-check:hover { background-color: var(--success-hover); transform: translateY(-2px); }
+        .btn-check:disabled { background-color: #94a3b8; cursor: not-allowed; transform: none; }
+        
+        .btn-hint { background-color: var(--warning); color: #fff; }
+        .btn-hint:hover { background-color: #d97706; transform: translateY(-2px); }
+        .btn-hint:disabled { background-color: #fcd34d; cursor: not-allowed; transform: none; }
+
+        .btn-solve { background-color: var(--secondary); }
+        .btn-solve:hover { background-color: var(--secondary-hover); transform: translateY(-2px); }
+
+        .btn-next { background-color: var(--primary); }
+        .btn-next:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+
+        /* Քայլ առ քայլ լուծման բլոկներ */
+        .steps-container { text-align: left; margin-top: 25px; display: none; }
+        .step-row {
+            background: #ffffff;
+            border-left: 6px solid var(--primary);
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            opacity: 0;
+            transform: translateX(-15px);
+            transition: all 0.4s ease-out;
+            overflow-x: auto;
+        }
+        .step-row.show { opacity: 1; transform: translateX(0); }
+        .step-desc { font-size: 1.05rem; color: var(--secondary); margin-bottom: 12px; font-weight: 600; line-height: 1.5; }
+        .step-math { font-size: 1.4rem; color: #000; padding: 10px; background: #f8fafc; border-radius: 8px; text-align: center;}
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="stats-bar">
+            <span>Ինտերակտիվ Վահանակ</span>
+            <span class="mastery-badge" id="mastery-badge">🏆 Վարպետ!</span>
+            <div class="xp-score">⭐ XP: <span id="xp-display">0</span></div>
+        </div>
+
+        <h1>Մաթեմատիկայի Տրենաժոր</h1>
+
+        <div class="controls">
+            <button class="level-btn active" onclick="setLevel(1)" id="lvl1">1. Պարզ</button>
+            <button class="level-btn" onclick="setLevel(2)" id="lvl2">2. Միջին</button>
+            <button class="level-btn" onclick="setLevel(3)" id="lvl3">3. Բարդ</button>
+            <button class="level-btn" onclick="setLevel(4)" id="lvl4">4. Խառը (Կոտորակ)</button>
+            <button class="level-btn" onclick="setLevel(5)" id="lvl5">5. Բարդ Կոտորակային</button>
+        </div>
+
+        <div class="level-stats">
+            <span style="color: var(--success);">✅ Ճիշտ: <span id="stat-correct">0</span>/15</span>
+            <span style="color: var(--danger);">❌ Սխալ: <span id="stat-wrong">0</span></span>
+        </div>
+
+        <div class="equation-box" id="main-equation"></div>
+        
+        <!-- Հուշման Բլոկ -->
+        <div class="hint-box" id="hint-box">
+            <strong>💡 Ուսուցչի Հուշում.</strong> <span id="hint-text"></span>
+        </div>
+
+        <div class="interactive-area">
+            <div class="input-group">
+                <label for="user-answer">x = </label>
+                <input type="text" id="user-answer" placeholder="օր․՝ 1/2 կամ -0.5">
+            </div>
+            <div id="feedback" class="feedback-msg">Լուծե՛ք և ստուգե՛ք: Դժվարանալու դեպքում օգտագործեք հուշումը։</div>
+            
+            <div class="action-btns">
+                <button class="action-btn btn-check" id="btn-check" onclick="checkAnswer()">Ստուգել 🎯</button>
+                <button class="action-btn btn-hint" id="btn-hint" onclick="showHint()">Հուշում 💡</button>
+                <button class="action-btn btn-solve" id="btn-solve" onclick="showSolution()">Մանրամասն Լուծում 📖</button>
+                <button class="action-btn btn-next" onclick="generateEquation()">Հաջորդ Խնդիրը 🡒</button>
+            </div>
+        </div>
+
+        <div class="steps-container" id="steps-box"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ՃՇԳՐԻՏ ԿՈՏՈՐԱԿԱՅԻՆ ՄԱԹԵՄԱՏԻԿԱՅԻ ՇԱՐԺԻՉ
+        // ==========================================
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        class Frac {
+            constructor(n, d = 1) {
+                let g = gcd(n, d);
+                this.n = n / g;
+                this.d = d / g;
+                if (this.d < 0) { this.n = -this.n; this.d = -this.d; }
+            }
+            static add(a, b) { return new Frac(a.n * b.d + b.n * a.d, a.d * b.d); }
+            static sub(a, b) { return new Frac(a.n * b.d - b.n * a.d, a.d * b.d); }
+            static mul(a, b) { return new Frac(a.n * b.n, a.d * b.d); }
+            static div(a, b) { return new Frac(a.n * b.d, a.d * b.n); }
+            
+            toVal() { return this.n / this.d; }
+            isZero() { return this.n === 0; }
+            
+            format(isVar = false, isFirst = false) {
+                if (this.n === 0) return isFirst ? "0" : "";
+                let absN = Math.abs(this.n);
+                let sign = this.n < 0 ? "-" : "+";
+                let fracStr = this.d === 1 ? `${absN}` : `\\frac{${absN}}{${this.d}}`;
+                
+                if (isVar) {
+                    if (absN === 1 && this.d === 1) fracStr = "x";
+                    else if (absN === 1 && this.d !== 1) fracStr = `\\frac{x}{${this.d}}`;
+                    else fracStr += "x";
+                }
+                
+                if (isFirst) return this.n < 0 ? `-${fracStr}` : fracStr;
+                return `${sign} ${fracStr}`;
+            }
+
+            formatIns(isVar = false) {
+                if (this.n === 0) return "";
+                let absN = Math.abs(this.n);
+                let sign = this.n < 0 ? "-" : "+";
+                let fracStr = this.d === 1 ? `${absN}` : `\\frac{${absN}}{${this.d}}`;
+                if (isVar) fracStr += "x";
+                return `${sign} ${fracStr}`;
+            }
+        }
+
+        function R(n, d=1) { return new Frac(n, d); }
+
+        // ==========================================
+        // ՀԻՄՆԱԿԱՆ ՏՐԱՄԱԲԱՆՈՒԹՅՈՒՆ
+        // ==========================================
+        let currentLevel = 1;
+        let currentRootVal = 0; 
+        let steps = [];
+        let isSolved = false; 
+        let currentHint = "";
+        
+        let userXP = parseInt(localStorage.getItem('mathXP')) || 0;
+        document.getElementById('xp-display').innerText = userXP;
+
+        let levelStats = JSON.parse(localStorage.getItem('mathStats')) || {
+            1: { c: 0, w: 0 }, 2: { c: 0, w: 0 }, 3: { c: 0, w: 0 }, 4: { c: 0, w: 0 }, 5: { c: 0, w: 0 }
+        };
+
+        function updateStatsUI() {
+            let stats = levelStats[currentLevel];
+            document.getElementById('stat-correct').innerText = stats.c;
+            document.getElementById('stat-wrong').innerText = stats.w;
+            document.getElementById('mastery-badge').style.display = (stats.c >= 15) ? 'inline' : 'none';
+        }
+
+        function rndInt(min, max, exclude = []) {
+            let num;
+            do { num = Math.floor(Math.random() * (max - min + 1)) + min; } 
+            while (exclude.includes(num) || num === 0);
+            return num;
+        }
+
+        function parseUserInput(input) {
+            if (!input) return NaN;
+            input = input.trim().replace(/ /g, '').replace(/[,․]/g, '.').replace(/[−–—_]/g, '-');
+            if (input.includes('/')) {
+                let parts = input.split('/');
+                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                    return parseFloat(parts[0]) / parseFloat(parts[1]);
+                }
+                return NaN;
+            }
+            return parseFloat(input);
+        }
+
+        function setLevel(lvl) {
+            currentLevel = lvl;
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('lvl' + lvl).classList.add('active');
+            updateStatsUI();
+            generateEquation();
+        }
+
+        function generateEquation() {
+            document.getElementById('steps-box').innerHTML = ''; 
+            document.getElementById('steps-box').style.display = 'none';
+            document.getElementById('hint-box').style.display = 'none';
+            document.getElementById('user-answer').value = '';
+            document.getElementById('user-answer').disabled = false;
+            document.getElementById('btn-check').disabled = false;
+            document.getElementById('btn-hint').disabled = false;
+            document.getElementById('btn-solve').disabled = false;
+            document.getElementById('feedback').innerText = 'Լուծե՛ք ինքնուրույն և ստուգե՛ք:';
+            document.getElementById('feedback').className = 'feedback-msg';
+            document.getElementById('main-equation').style.borderColor = '#cbd5e1';
+            
+            steps = []; 
+            isSolved = false;
+            let type = rndInt(1, 4);
+            let eqStr = "";
+            let a, b, c, d, e;
+            let x; 
+
+            if (currentLevel <= 3) {
+                x = R(rndInt(-10, 10));
+            } else {
+                let dens = [1, 2, 3, 4, 5];
+                let den = dens[Math.floor(Math.random() * dens.length)];
+                x = R(rndInt(-10, 10), den);
+            }
+            currentRootVal = x.toVal();
+
+            // ================= ΜԱԿԱՐԴԱԿ 1 =================
+            if (currentLevel === 1) {
+                if (type === 1) { // ax + b = c
+                    a = R(rndInt(-8, 8)); b = R(rndInt(-20, 20)); 
+                    c = Frac.add(Frac.mul(a, x), b);
+                    eqStr = `${a.format(true, true)} ${b.format(false, false)} = ${c.format(false, true)}`;
+                    
+                    currentHint = `Քայլ 1: Ձախ մասի հայտնի թիվը (${b.format(false, true)}) տեղափոխիր աջ՝ փոխելով նշանը հակադիրի:\nՔայլ 2: Աջ մասի արդյունքը բաժանիր x-ի գործակցի (${a.format(false, true)}) վրա:`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: `2. Ազատ անդամը տեղափոխում ենք աջ մաս։ Ուշադրություն դարձրեք, որ ${b.format(false, true)}-ը աջ տեղափոխելիս դառնում է ${Frac.sub(R(0), b).format(false, true)}:`, math: `${a.format(true, true)} = ${c.format(false, true)} ${Frac.sub(R(0), b).format(false, false)}` });
+                    steps.push({ desc: "3. Կատարում ենք թվաբանական գործողություն աջ մասում:", math: `${a.format(true, true)} = ${Frac.sub(c, b).format(false, true)}` });
+                    steps.push({ desc: `4. Որպեսզի գտնենք x-ը, հավասարման երկու կողմերը բաժանում ենք x-ի գործակցի վրա (${a.format(false, true)}):`, math: `x = \\frac{${Frac.sub(c, b).format(false, true)}}{${a.format(false, true)}}` });
+                    
+                } else if (type === 2) { // x + a = bx
+                    a = R(rndInt(-15, 15)); b = R(rndInt(2, 6)); 
+                    a = Frac.mul(R(b.n - 1), x);
+                    eqStr = `x ${a.formatIns(false)} = ${b.format(true, true)}`;
+                    
+                    currentHint = `Այս տիպի խնդիրներում ավելի հարմար է փոքր գործակցով անհայտը տեղափոխել մեծի մոտ: Ձախ մասի x-ը տեղափոխիր աջ (դառնում է -x):`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Խմբավորում ենք x-երը նույն կողմում: Տեղափոխում ենք x-ը աջ մաս՝ նշանը փոխելով:", math: `${a.format(false, true)} = ${b.format(true, true)} - x` });
+                    steps.push({ desc: "3. Աջ մասում կատարում ենք նման անդամների միացում (հանում ենք գործակիցները):", math: `${a.format(false, true)} = ${Frac.sub(b, R(1)).format(true, true)}` });
+                    steps.push({ desc: `4. Վերջապես գտնում ենք x-ը՝ բաժանելով ${Frac.sub(b, R(1)).format(false, true)}-ի վրա:`, math: `x = \\frac{${a.format(false, true)}}{${Frac.sub(b, R(1)).format(false, true)}}` });
+                } else { // a = bx + c
+                    b = R(rndInt(-8, 8)); c = R(rndInt(-15, 15)); a = Frac.add(Frac.mul(b, x), c);
+                    eqStr = `${a.format(false, true)} = ${b.format(true, true)} ${c.format(false, false)}`;
+                    
+                    currentHint = "Երբ x-ը գտնվում է աջ մասում, շատ ավելի հեշտ է սկզբում պարզապես տեղերով փոխել հավասարման աջ և ձախ մասերը ամբողջությամբ։";
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Հարմարության համար տեղերով փոխում ենք հավասարման աջ և ձախ մասերը (նշանները չեն փոխվում):", math: `${b.format(true, true)} ${c.format(false, false)} = ${a.format(false, true)}` });
+                    steps.push({ desc: "3. Տեղափոխում ենք ազատ անդամը:", math: `${b.format(true, true)} = ${a.format(false, true)} ${Frac.sub(R(0),c).format(false, false)}` });
+                    steps.push({ desc: "4. Պարզեցնում և գտնում ենք արմատը:", math: `x = \\frac{${Frac.sub(a, c).format(false, true)}}{${b.format(false, true)}}` });
+                }
+            } 
+            // ================= ՄԱԿԱՐԴԱԿ 2 =================
+            else if (currentLevel === 2) {
+                if (type === 1) { // ax + b = cx + d
+                    do { a = R(rndInt(-9, 9)); c = R(rndInt(-9, 9)); } while (a.n === c.n);
+                    b = R(rndInt(-15, 15)); 
+                    d = Frac.sub(Frac.add(Frac.mul(a, x), b), Frac.mul(c, x));
+                    eqStr = `${a.format(true, true)} ${b.format(false, false)} = ${c.format(true, true)} ${d.format(false, false)}`;
+                    
+                    currentHint = `Տեղափոխություն արա. աջ կողմի ${c.format(true, true)}-ը բեր ձախ, իսկ ձախ կողմի թվային անդամ ${b.format(false, true)}-ը տար աջ:`;
+                    
+                    steps.push({ desc: "1. Սկզբնական հավասարումը:", math: eqStr });
+                    steps.push({ desc: `2. Անհայտ պարունակող անդամները հավաքում ենք ձախում, իսկ թվերը՝ աջում։ Տեղափոխվող անդամների նշանները փոխվում են.`, math: `${a.format(true, true)} ${Frac.sub(R(0),c).format(true, false)} = ${d.format(false, true)} ${Frac.sub(R(0),b).format(false, false)}` });
+                    steps.push({ desc: "3. Կատարում ենք նման անդամների միացում երկու կողմերում:", math: `${Frac.sub(a,c).format(true, true)} = ${Frac.sub(d,b).format(false, true)}` });
+                    steps.push({ desc: "4. Բաժանում ենք x-ի նոր գործակցի վրա:", math: `x = \\frac{${Frac.sub(d,b).format(false, true)}}{${Frac.sub(a,c).format(false, true)}}` });
+                } else if (type === 2) { // a(x + b) = c
+                    a = R(rndInt(2, 6)); b = R(rndInt(-10, 10)); c = Frac.mul(a, Frac.add(x, b));
+                    eqStr = `${a.format(false, true)}(x ${b.formatIns(false)}) = ${c.format(false, true)}`;
+                    
+                    currentHint = `Բաշխական օրենք. բազմապատկիր փակագծից դուրս գտնվող ${a.format(false, true)}-ը և՛ x-ով, և՛ ներսի ${b.format(false, true)} թվով:`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը փակագծերով:", math: eqStr });
+                    steps.push({ desc: "2. Բացում ենք փակագիծը՝ օգտագործելով բաշխական օրենքը։ Բազմապատկում ենք գործակիցը ներսի յուրաքանչյուր անդամի հետ:", math: `${a.format(true, true)} ${Frac.mul(a, b).format(false, false)} = ${c.format(false, true)}` });
+                    steps.push({ desc: "3. Ստացված ազատ անդամը տեղափոխում ենք աջ՝ փոխելով նշանը:", math: `${a.format(true, true)} = ${c.format(false, true)} ${Frac.sub(R(0), Frac.mul(a,b)).format(false, false)}` });
+                    steps.push({ desc: "4. Պարզեցնում և բաժանում ենք x-ի գործակցի վրա:", math: `x = \\frac{${Frac.sub(c, Frac.mul(a,b)).format(false, true)}}{${a.format(false, true)}}` });
+                } else { // a - bx = cx + d
+                    a = R(rndInt(-10, 10)); b = R(rndInt(2, 7)); c = R(rndInt(2, 7));
+                    d = Frac.sub(a, Frac.mul(Frac.add(b, c), x));
+                    eqStr = `${a.format(false, true)} - ${b.format(true, true)} = ${c.format(true, true)} ${d.format(false, false)}`;
+                    
+                    currentHint = `Ուշադրություն դարձրու, որ x-ի գործակիցը բացասական է (-${b.format(false, true)}): Տեղափոխելիս մի՛ մոռացիր փոխել նշանը պլյուսի:`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Կատարում ենք խմբավորում: Թվերը հավաքում ենք ձախում, իսկ անհայտները՝ աջում, որպեսզի գործակիցները մնան դրական:", math: `${a.format(false, true)} ${Frac.sub(R(0),d).format(false, false)} = ${c.format(true, true)} + ${b.format(true, true)}` });
+                    steps.push({ desc: "3. Միացնում ենք նման անդամները երկու կողմերում:", math: `${Frac.sub(a,d).format(false, true)} = ${Frac.add(c,b).format(true, true)}` });
+                    steps.push({ desc: "4. Գտնում ենք արմատը:", math: `x = \\frac{${Frac.sub(a,d).format(false, true)}}{${Frac.add(c,b).format(false, true)}}` });
+                }
+            }
+            // ================= ՄԱԿԱՐԴԱԿ 3 =================
+            else if (currentLevel === 3) {
+                if (type === 1) { // a(x+b) = c(x+d)
+                    do { a = R(rndInt(2, 6)); c = R(rndInt(2, 6)); } while(a.n === c.n);
+                    b = R(rndInt(-5, 5)); d = R(rndInt(-5, 5));
+                    let leftV = Frac.mul(a, Frac.add(x, b));
+                    let eVal = Frac.sub(leftV, Frac.mul(c, Frac.add(x, d)));
+                    eqStr = `${a.format(false,true)}(x ${b.formatIns(false)}) = ${c.format(false,true)}(x ${d.formatIns(false)}) ${eVal.format(false,false)}`;
+                    
+                    currentHint = `Այս բարդ կառուցվածքում նախ պետք է բացել երկու կողմի փակագծերը միաժամանակ: Բազմապատկիր ${a.format(false, true)}-ը ձախի և ${c.format(false, true)}-ը աջի փակագծի անդամների հետ:`;
+                    
+                    steps.push({ desc: "1. Տրված բարդ հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Բաշխական օրենքով բացում ենք երկու կողմի փակագծերը:", math: `${a.format(true,true)} ${Frac.mul(a,b).format(false,false)} = ${c.format(true,true)} ${Frac.mul(c,d).format(false,false)} ${eVal.format(false,false)}` });
+                    steps.push({ desc: "3. Պարզեցնում ենք աջ մասի թվային անդամները:", math: `${a.format(true,true)} ${Frac.mul(a,b).format(false,false)} = ${c.format(true,true)} ${Frac.add(Frac.mul(c,d), eVal).format(false,false)}` });
+                    steps.push({ desc: "4. Կատարում ենք տեղափոխություններ (x-երը ձախ, թվերը աջ):", math: `${a.format(true,true)} ${Frac.sub(R(0),c).format(true,false)} = ${Frac.add(Frac.mul(c,d), eVal).format(false,true)} ${Frac.sub(R(0),Frac.mul(a,b)).format(false,false)}` });
+                    steps.push({ desc: "5. Միացնում ենք նման անդամները և գտնում արմատը:", math: `${Frac.sub(a,c).format(true,true)} = ${Frac.sub(Frac.add(Frac.mul(c,d), eVal), Frac.mul(a,b)).format(false,true)}` });
+                } else if (type === 2) { // 5(x-2)-3x = d
+                    do { a = R(rndInt(3,6)); c = R(rndInt(-5,-1)); } while(a.n+c.n===0);
+                    b = R(rndInt(-5, 5)); 
+                    d = Frac.add(Frac.mul(a, Frac.add(x, b)), Frac.mul(c, x));
+                    eqStr = `${a.format(false,true)}(x ${b.formatIns(false)}) ${c.format(true,false)} = ${d.format(false,true)}`;
+                    
+                    currentHint = `Բացելով փակագիծը՝ կնկատես, որ ձախ կողմում կա երկու անհայտով անդամ (x պարունակող)։ Տեղափոխություն անելուց առաջ միացրու դրանք։`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Բացում ենք փակագիծը:", math: `${a.format(true,true)} ${Frac.mul(a,b).format(false,false)} ${c.format(true,false)} = ${d.format(false,true)}` });
+                    steps.push({ desc: "3. Միացնում ենք հավասարման նույն կողմում գտնվող անհայտները:", math: `${Frac.add(a,c).format(true,true)} ${Frac.mul(a,b).format(false,false)} = ${d.format(false,true)}` });
+                    steps.push({ desc: "4. Ազատ անդամը տեղափոխում ենք աջ և պարզեցնում:", math: `${Frac.add(a,c).format(true,true)} = ${d.format(false,true)} ${Frac.sub(R(0), Frac.mul(a,b)).format(false,false)}` });
+                } else { // a - (bx - c) = d
+                    a = R(rndInt(5, 15)); b = R(rndInt(2, 5)); c = R(rndInt(-6, 6));
+                    d = Frac.sub(a, Frac.sub(Frac.mul(b, x), c));
+                    eqStr = `${a.format(false,true)} - (${b.format(true,true)} ${Frac.sub(R(0),c).format(false,false)}) = ${d.format(false,true)}`;
+                    
+                    currentHint = `ՈՒՇԱԴՐՈՒԹՅՈՒՆ: Փակագծից առաջ դրված մինուսը նշանակում է, որ փակագիծը բացելիս ներսի բոլոր նշանները փոխվելու են (պլյուսը դառնալու է մինուս, մինուսը՝ պլյուս)։`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Բացում ենք փակագիծը։ Քանի որ դիմացը մինուս նշան է, փակագծի ներսի բոլոր անդամների նշանները փոխվում են հակադիրի:", math: `${a.format(false,true)} - ${b.format(true,true)} + ${c.format(false,true)} = ${d.format(false,true)}` });
+                    steps.push({ desc: "3. Միացնում ենք ձախ մասի թվերը:", math: `${Frac.add(a,c).format(false,true)} - ${b.format(true,true)} = ${d.format(false,true)}` });
+                    steps.push({ desc: "4. Տեղափոխում ենք թվերը աջ, իսկ -x-ը թողնում ձախում:", math: `- ${b.format(true,true)} = ${d.format(false,true)} ${Frac.sub(R(0), Frac.add(a,c)).format(false,false)}` });
+                    steps.push({ desc: "5. Բաժանում ենք գործակցի վրա:", math: `x = \\frac{${Frac.sub(d, Frac.add(a,c)).format(false,true)}}{-${b.format(false,true)}}` });
+                }
+            }
+            // ================= ՄԱԿԱՐԴԱԿ 4 =================
+            else if (currentLevel === 4) {
+                a = R(rndInt(1, 5), rndInt(2, 5)); 
+                c = R(rndInt(1, 5), rndInt(2, 5)); 
+                while(a.toVal() === c.toVal()) c = R(rndInt(1,5), rndInt(2,5)); 
+                
+                if (type <= 2) { // a*x + b = c*x + d
+                    b = R(rndInt(-5, 5), rndInt(2, 4));
+                    d = Frac.add(Frac.sub(Frac.mul(a, x), Frac.mul(c, x)), b);
+                    eqStr = `${a.format(true, true)} ${b.format(false, false)} = ${c.format(true, true)} ${d.format(false, false)}`;
+                    
+                    currentHint = `Կոտորակային գործակիցներով խնդիր: Վարվիր այնպես, ինչպես ամբողջ թվերի դեպքում՝ x-երը հավաքիր մի կողմում, ապա կատարիր կոտորակների հանում ընդհանուր հայտարարի բերելով։`;
+                    
+                    steps.push({ desc: "1. Սկզբնական կոտորակային հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Խմբավորում ենք. կոտորակային անհայտները տեղափոխում ենք ձախ, թվերը՝ աջ:", math: `${a.format(true, true)} ${Frac.sub(R(0),c).format(true, false)} = ${d.format(false, true)} ${Frac.sub(R(0),b).format(false, false)}` });
+                    steps.push({ desc: "3. Կատարում ենք կոտորակների հանում և գումարում:", math: `(${a.format(false, true)} ${Frac.sub(R(0),c).format(false, false)})x = ${Frac.sub(d,b).format(false, true)}` });
+                    steps.push({ desc: "4. Արդյունքի պարզեցում:", math: `${Frac.sub(a,c).format(true, true)} = ${Frac.sub(d,b).format(false, true)}` });
+                } else { // x/a - b = c
+                    let den = rndInt(2, 6); a = R(1, den);
+                    b = R(rndInt(1, 5), rndInt(2, 4));
+                    let dVal = Frac.sub(Frac.mul(a, x), b);
+                    eqStr = `${a.format(true, true)} - ${b.format(false, true)} = ${dVal.format(false, true)}`;
+                    
+                    currentHint = `Նախ տեղափոխիր ${b.format(false, true)}-ը աջ կողմ, ապա հավասարման երկու կողմը բազմապատկիր հայտարարով (${den}), որպեսզի վերանա կոտորակը։`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը:", math: eqStr });
+                    steps.push({ desc: "2. Սկզբում տեղափոխում ենք ազատ անդամը աջ և կատարում գումարում:", math: `${a.format(true, true)} = ${dVal.format(false, true)} + ${b.format(false, true)}` });
+                    steps.push({ desc: "3. Ստանում ենք պարզեցված տեսքը:", math: `${a.format(true, true)} = ${Frac.add(dVal, b).format(false, true)}` });
+                    steps.push({ desc: `4. Որպեսզի գտնենք x-ը, աջ մասի արժեքը բազմապատկում ենք հայտարարով (${den}):`, math: `x = ${Frac.add(dVal, b).format(false, true)} \\cdot ${den}` });
+                }
+            }
+            // ================= ՄԱԿԱՐԴԱԿ 5 =================
+            else {
+                a = R(rndInt(1, 4), rndInt(2, 4)); 
+                b = R(rndInt(-4, 4), rndInt(2, 3)); if(b.isZero()) b = R(1, 2);
+                c = R(rndInt(1, 4), rndInt(2, 4));
+                
+                if (type <= 2) { // a(x + b) = cx + d
+                    while(a.toVal() === c.toVal()) c = R(rndInt(1, 4), rndInt(2, 4));
+                    d = Frac.sub(Frac.mul(a, Frac.add(x, b)), Frac.mul(c, x));
+                    eqStr = `${a.format(false,true)}(x ${b.formatIns(false)}) = ${c.format(true,true)} ${d.format(false,false)}`;
+                    
+                    currentHint = `Այստեղ միաժամանակ կան և՛ փակագծեր, և՛ կոտորակներ։ Նախ կոտորակով բազմապատկիր փակագծի ներսի անդամները։`;
+                    
+                    steps.push({ desc: "1. Բարդ կոտորակային հավասարում փակագծերով:", math: eqStr });
+                    steps.push({ desc: "2. Բաշխական օրենքով կոտորակը բազմապատկում ենք փակագծի ներսի յուրաքանչյուր անդամի հետ:", math: `${a.format(true,true)} ${Frac.mul(a,b).format(false,false)} = ${c.format(true,true)} ${d.format(false,false)}` });
+                    steps.push({ desc: "3. Տեղափոխում ենք x-երը ձախ և թվերը աջ:", math: `${a.format(true,true)} ${Frac.sub(R(0),c).format(true,false)} = ${d.format(false,true)} ${Frac.sub(R(0),Frac.mul(a,b)).format(false,false)}` });
+                    steps.push({ desc: "4. Հաշվում ենք կոտորակային գործակիցների հանումը և աջ մասի արժեքը:", math: `${Frac.sub(a,c).format(true,true)} = ${Frac.sub(d, Frac.mul(a,b)).format(false,true)}` });
+                } else { // (ax + b)/c = d
+                    let den = rndInt(2, 5);
+                    a = R(rndInt(2, 5)); b = R(rndInt(-5, 5)); if(b.isZero()) b=R(1);
+                    let numVal = Frac.add(Frac.mul(a, x), b);
+                    d = Frac.div(numVal, R(den));
+                    eqStr = `\\frac{${a.format(true,true)} ${b.format(false,false)}}{${den}} = ${d.format(false,true)}`;
+                    
+                    currentHint = `Երբ ամբողջ ձախ մասը գտնվում է կոտորակի գծի վրա, առաջին քայլը հայտարարից (${den}) ազատվելն է՝ աջ մասը բազմապատկելով դրանով։`;
+                    
+                    steps.push({ desc: "1. Տրված հավասարումը (ձախ կողմում ընդհանուր հայտարար):", math: eqStr });
+                    steps.push({ desc: "2. Ազատվում ենք կոտորակի հայտարարից՝ հավասարման երկու կողմը բազմապատկելով դրանով:", math: `${a.format(true,true)} ${b.format(false,false)} = ${d.format(false,true)} \\cdot ${den}` });
+                    steps.push({ desc: "3. Կատարում ենք բազմապատկում աջ մասում:", math: `${a.format(true,true)} ${b.format(false,false)} = ${Frac.mul(d, R(den)).format(false,true)}` });
+                    steps.push({ desc: "4. Այժմ հավասարումը բերվել է պարզ տեսքի: Տեղափոխում ենք ազատ անդամը:", math: `${a.format(true,true)} = ${Frac.mul(d, R(den)).format(false,true)} ${Frac.sub(R(0),b).format(false,false)}` });
+                }
+            }
+
+            // ================= ԸՆԴՀԱՆՈՒՐ ՎԵՐՋՆԱԿԱՆ ՔԱՅԼ =================
+            let rootFracStr = x.format(false, true);
+            let finalMath = `x = ${rootFracStr}`;
+            
+            if (x.d !== 1) {
+                let decVal = x.n / x.d;
+                let temp = x.d;
+                while (temp % 2 === 0) temp /= 2;
+                while (temp % 5 === 0) temp /= 5;
+                if (temp === 1) {
+                    finalMath += ` = ${decVal}`; 
+                } else {
+                    finalMath += ` \\approx ${decVal.toFixed(2)}`; 
+                }
+            }
+            steps.push({ desc: "Վերջնական քայլ. Գտնում ենք հավասարման արմատը:", math: finalMath });
+
+            document.getElementById('hint-text').innerText = currentHint;
+            renderMath('main-equation', eqStr);
+        }
+
+        function renderMath(elementId, mathString) {
+            katex.render(mathString, document.getElementById(elementId), { displayMode: true, throwOnError: false });
+        }
+
+        function showHint() {
+            document.getElementById('hint-box').style.display = 'block';
+        }
+
+        function checkAnswer() {
+            if (isSolved) return;
+            let rawInput = document.getElementById('user-answer').value;
+            let userVal = parseUserInput(rawInput);
+            
+            let feedback = document.getElementById('feedback');
+            let box = document.getElementById('main-equation');
+
+            if (isNaN(userVal)) {
+                feedback.innerText = "Խնդրում ենք մուտքագրել թիվ կամ կոտորակ (օրինակ՝ 1/2 կամ -0.5):";
+                feedback.className = "feedback-msg msg-error";
+                return;
+            }
+
+            if (Math.abs(userVal - currentRootVal) < 0.0001) {
+                isSolved = true;
+                feedback.innerText = "🎉 Գերազանց է։ Ճիշտ պատասխան (+10 XP)";
+                feedback.className = "feedback-msg msg-correct";
+                box.style.borderColor = "var(--success)";
+                
+                document.getElementById('user-answer').disabled = true;
+                document.getElementById('btn-check').disabled = true;
+                document.getElementById('btn-hint').disabled = true;
+                document.getElementById('btn-solve').disabled = true;
+                
+                userXP += 10;
+                localStorage.setItem('mathXP', userXP);
+                document.getElementById('xp-display').innerText = userXP;
+
+                levelStats[currentLevel].c += 1;
+                localStorage.setItem('mathStats', JSON.stringify(levelStats));
+                updateStatsUI();
+            } else {
+                feedback.innerText = "❌ Սխալ է: Ստուգի՛ր նշանները կամ հաշվարկը:";
+                feedback.className = "feedback-msg msg-error";
+                box.style.borderColor = "var(--danger)";
+                
+                levelStats[currentLevel].w += 1;
+                localStorage.setItem('mathStats', JSON.stringify(levelStats));
+                updateStatsUI();
+            }
+        }
+
+        async function showSolution() {
+            if(isSolved) return; 
+            isSolved = true; 
+            
+            let dispVal = Number.isInteger(currentRootVal) ? currentRootVal : currentRootVal.toFixed(3).replace(/\.?0+$/, '');
+            
+            document.getElementById('user-answer').value = dispVal;
+            document.getElementById('user-answer').disabled = true;
+            document.getElementById('btn-check').disabled = true;
+            document.getElementById('btn-hint').disabled = true;
+            document.getElementById('btn-solve').disabled = true;
+            document.getElementById('feedback').innerText = "Լուծումը ցուցադրված է։ (Միավոր չի տրվում)";
+            document.getElementById('feedback').className = "feedback-msg";
+            document.getElementById('main-equation').style.borderColor = "var(--secondary)";
+            document.getElementById('hint-box').style.display = 'none';
+
+            const container = document.getElementById('steps-box');
+            container.style.display = 'block';
+            container.innerHTML = ''; 
+
+            for (let i = 0; i < steps.length; i++) {
+                let stepDiv = document.createElement('div');
+                stepDiv.className = 'step-row';
+                
+                let descDiv = document.createElement('div');
+                descDiv.className = 'step-desc';
+                descDiv.innerText = steps[i].desc;
+
+                let mathDiv = document.createElement('div');
+                mathDiv.className = 'step-math';
+                
+                stepDiv.appendChild(descDiv);
+                stepDiv.appendChild(mathDiv);
+                container.appendChild(stepDiv);
+
+                katex.render(steps[i].math, mathDiv, { displayMode: true });
+
+                await new Promise(r => setTimeout(r, 350));
+                stepDiv.classList.add('show');
+            }
+        }
+
+        document.getElementById("user-answer").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        window.onload = () => {
+            updateStatsUI();
+            generateEquation();
+        };
+    </script>
+</body>
+</html>
